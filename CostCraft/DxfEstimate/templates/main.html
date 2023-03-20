@@ -1,0 +1,60 @@
+{% extends 'header.html' %}
+{% load static %}
+{% block title %}Прайслист{% endblock %}
+{% block content %}
+<body>
+<div class="rate">
+    <p>Курс доллара: {{ rate }}</p>
+    <p>Обновлён: {{ ratedate }}</p>
+    <a href="{% url 'convert_dol' %}" class="button">Конвертировать в доллары</a>
+</div>
+<div>
+    <form method="post" class="form-addprice">
+        <div class="form-addprice__content">
+            <div class="form-addprice__text">
+                <input type="text" class="form-control" placeholder="Добавить новый материал" name="name">
+            </div>
+            <div class="form-addprice__other-content">
+                {% csrf_token %}
+                <div class="form-addprice__other-elem">{{ form_price.units }}</div>
+                <div class="form-addprice__other-elem">{{ form_price.price_sum }}</div>
+                <div class="form-addprice__other-elem">{{ form_price.price_dol }}</div>
+                <div class="form-addprice__other-elem">{{ form_price.types }}</div>
+                <button type="submit" class="button--inline">Записать</button>
+            </div>
+
+        </div>
+
+    </form>
+    <table class="maintable">
+        <thead>
+        <tr>
+            <th>Наименование</th>
+            <th>Цена сум</th>
+            <th>Цена $</th>
+            <th>ед.изм.</th>
+            <th>Тип</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for record in pricelist %}
+        <tr>
+            <td>{{ record.name }}</td>
+            <td>{{ record.price_sum }}</td>
+            <td>{{ record.price_dol }}</td>
+            <td>{{ record.units.units }}</td>
+            <td>{{ record.types.types }}</td>
+            <td class="maintable__cell_not-bordered">
+                <a href="{% url 'pricelist_rec_del' record.id %}">
+                    <img src="{% static 'DxfEstimate/red_cross.png' %}" alt="del" width="20" height="20">
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="center-button"><a href="{% url 'get_dxf' %}" class="button">Создать dxf-шаблон</a></div>
+
+</div>
+</body>
+{% endblock %}

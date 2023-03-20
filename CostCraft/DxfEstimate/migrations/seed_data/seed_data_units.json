@@ -1,0 +1,20 @@
+﻿[
+  {
+    "model": "CostCraft.Units",
+    "fields": {
+      "units": "м"
+    }
+  },
+  {
+    "model": "CostCraft.Units",
+    "fields": {
+      "units": "м²"
+    }
+  },
+  {
+    "model": "CostCraft.Units",
+    "fields": {
+      "units": "шт"
+    }
+  }
+]

@@ -1,0 +1,77 @@
+{% extends 'header.html' %}
+
+{% load static %}
+
+{% block head %}
+{{ form_estimate.media.css }}
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+{% endblock %}
+
+{% block title %}Смета{% endblock %}
+
+{% block content %}
+
+<body>
+<div class="form-estimate">
+    <form method="POST">
+        {% csrf_token %}
+        {{ form_estimate.as_p }}
+        <input type="hidden" name="addestimate" value="True">
+        <p><button type="submit" class="button--inline">Добавить</button></p>
+        <p><a href="{% url 'estimate_xls' %}" class="button--inline">Скачать смету</a></p>
+    </form>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{{ form_estimate.media.js }}
+{% if estimate %}
+    <table class="maintable">
+        <thead>
+            <tr>
+                <th>Наименование</th>
+                <th>Количество</th>
+                <th>ед.изм.</th>
+                <th>Цена/ед</th>
+                <th>Цена</th>
+                <th class="maintable__cell_not-bordered"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in estimate %}
+            <tr>
+                <td>{{ record.name }}</td>
+                {% if record.units == "шт" %}
+                <td>{{ record.quantity|floatformat }}</td>
+                {% else %}
+                <td>{{ record.quantity }}</td>
+                {% endif %}
+                <td>{{ record.units }}</td>
+                <td>{{ record.price_dol }} $</td>
+                <td>{{ record.total_price }} $</td>
+                <td class="maintable__cell_not-bordered">
+                    <a href="{% url 'estimate_rec_del' record.id %}">
+                        <img src="{% static 'DxfEstimate/red_cross.png' %}" alt="del" width="20" height="20">
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="maintable__cell_not-bordered" colspan="3"></td>
+                <td>Общая сумма</td>
+                <td>{{ sum_price|floatformat:2 }} $</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="center-button"><a href="{% url 'estimate_del' %}" class="button">Очистить смету</a></div>
+
+<!--TODO: цены в долларах/сумах-->
+</body>
+{% endif %}
+<body>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ dxfupload }}
+    <input type="hidden" name="adddxf" value="True">
+    <button type="submit" class="form-button">Создать смету</button>
+</form>
+</body>
+{% endblock %}

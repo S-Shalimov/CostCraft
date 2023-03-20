@@ -1,0 +1,20 @@
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" type="text/css" href="{% static 'DxfEstimate/styles.css' %}">
+    {% block head %}{% endblock %}
+    <meta charset="UTF-8">
+    <title>{% block title %}CostCraft{% endblock %}</title>
+</head>
+<header>
+<div class="header-bg">
+    <a href="{% url 'main' %}">Прайслист</a>
+    <a href="{% url 'estimate' %}">Смета</a>
+</div>
+</header>
+{% block content %}{% endblock %}
+</html>

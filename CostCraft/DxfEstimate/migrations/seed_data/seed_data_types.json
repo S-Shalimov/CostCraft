@@ -1,0 +1,26 @@
+﻿[
+  {
+    "model": "CostCraft.Types",
+    "fields": {
+      "types": "Рулонный"
+    }
+  },
+  {
+    "model": "CostCraft.Types",
+    "fields": {
+      "types": "Листовой"
+    }
+  },
+  {
+    "model": "CostCraft.Types",
+    "fields": {
+      "types": "Работы"
+    }
+  },
+  {
+    "model": "CostCraft.Types",
+    "fields": {
+      "types": "Деталь"
+    }
+  }
+]
