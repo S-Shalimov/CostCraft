@@ -107,7 +107,7 @@ class XlsServices():
                 worksheet.write_number((row_num + 1), 1, row.quantity, quantity_cell_format(row.units))
                 worksheet.write_string((row_num + 1), 2, row.units, cell_format)
                 worksheet.write_number((row_num + 1), 3, row.price_dol, float_cell_format)
-                worksheet.write_formula((row_num + 1), 4, f"=B{row_num + 2}+D{row_num + 2}", float_cell_format)
+                worksheet.write_formula((row_num + 1), 4, f"=B{row_num + 2}*D{row_num + 2}", float_cell_format)
 
             worksheet.merge_range(f"A{len(estimate) + 2}:D{len(estimate) + 2}", "Общая цена:", align_right_cell_format)
 
@@ -197,6 +197,7 @@ class DxfServices():
 
     @staticmethod
     def collect_estimate(dxf_req):
+        #TODO: Оптимизировать кол-во запросов в БД
         dxf_file = tempfile.NamedTemporaryFile(suffix='.dxf', delete=False)
         dxf_file.write(dxf_req.read())
         dxf_file.close()
@@ -205,22 +206,27 @@ class DxfServices():
 
         entities_with_pricelist_ids = []
         for object in dxf_scheme.modelspace():
-            layer_name = object.dxfattribs()['layer']
+            if isinstance(object,
+                          ezdxf.entities.lwpolyline.LWPolyline) or isinstance(object,
+                          ezdxf.entities.circle.Circle) or isinstance(object,
+                          ezdxf.entities.line.Line) or isinstance(object,
+                          ezdxf.entities.line.Line):
+                layer_name = object.dxfattribs()['layer']
 
-            # if the layer was created with get_dxf():
+                # if the layer was created with get_dxf():
 
-            if '0CC_' in layer_name:
-                id = ''
-                for char in layer_name[4:]:
-                    if '_' in char:
-                        break
-                    else:
-                        id += char
+                if '0CC_' in layer_name:
+                    id = ''
+                    for char in layer_name[4:]:
+                        if '_' in char:
+                            break
+                        else:
+                            id += char
 
-                entities_with_pricelist_ids.append({
-                    'id': int(id),
-                    'entity': object,
-                })
+                    entities_with_pricelist_ids.append({
+                        'id': int(id),
+                        'entity': object,
+                    })
 
         os.unlink(dxf_file.name)
 
