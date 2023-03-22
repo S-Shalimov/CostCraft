@@ -10,7 +10,7 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-from .utils import get_item_entity
+from .utils import get_item_quantity
 from ..models import *
 from ..forms import *
 
@@ -206,11 +206,11 @@ class DxfServices():
 
         entities_with_pricelist_ids = []
         for object in dxf_scheme.modelspace():
-            if isinstance(object,
-                          ezdxf.entities.lwpolyline.LWPolyline) or isinstance(object,
-                          ezdxf.entities.circle.Circle) or isinstance(object,
-                          ezdxf.entities.line.Line) or isinstance(object,
-                          ezdxf.entities.line.Line):
+            if isinstance(object, (ezdxf.entities.lwpolyline.LWPolyline,
+                                   ezdxf.entities.line.Line,
+                                   ezdxf.entities.arc.Arc,
+                                   ezdxf.entities.circle.Circle,
+                                   )):
                 layer_name = object.dxfattribs()['layer']
 
                 # if the layer was created with get_dxf():
@@ -256,9 +256,9 @@ class DxfServices():
                 item_unit = resource_data.units
                 item_types = resource_data.types
                 item_price = resource_data.price_dol
-                item_quantity += get_item_entity(obj, str(item_unit))
+                item_quantity += get_item_quantity(obj, str(item_unit))
             elif obj['id'] == item_id:
-                item_quantity += get_item_entity(obj, str(item_unit))
+                item_quantity += get_item_quantity(obj, str(item_unit))
 
 
 class CurrencyServices():
