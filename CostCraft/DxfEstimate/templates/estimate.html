@@ -49,7 +49,7 @@
                 <td>{{ record.total_price }} $</td>
                 <td class="maintable__cell_not-bordered">
                     <a href="{% url 'estimate_rec_del' record.id %}">
-                        <img src="{% static 'DxfEstimate/red_cross.png' %}" alt="del" width="20" height="20">
+                        <img src="{% static 'DxfEstimate/close_cross.png' %}" alt="del" width="20" height="20">
                     </a>
                 </td>
             </tr>
@@ -71,7 +71,7 @@
     {% csrf_token %}
     {{ dxfupload }}
     <input type="hidden" name="adddxf" value="True">
-    <button type="submit" class="form-button">Создать смету</button>
+    <button type="submit" class="button--inline">Создать смету</button>
 </form>
 </body>
 {% endblock %}

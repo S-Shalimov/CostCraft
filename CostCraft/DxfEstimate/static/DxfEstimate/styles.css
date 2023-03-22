@@ -1,7 +1,13 @@
 .header-bg {
- background: #2B7A78;
- height: 50px;
- margin-bottom: 50px;
+  background: #2B7A78;
+  height: 50px;
+  margin-bottom: 50px;
+  margin-left: -3%;
+  margin-right: -3%;
+}
+
+.header-menu {
+  padding: 0 3%;
 }
 
 .header-bg a {
@@ -18,10 +24,12 @@
 
 body {
   background-color: #DEF2F1;
+  padding: 0 2.85%;
 }
 
 .rate {
   margin-top: -35px;
+  margin-bottom: 15px;
 }
 
 .maintable {

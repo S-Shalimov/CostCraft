@@ -12,8 +12,11 @@
 </head>
 <header>
 <div class="header-bg">
-    <a href="{% url 'main' %}">Прайслист</a>
-    <a href="{% url 'estimate' %}">Смета</a>
+    <div class="header-menu">
+        <a href="{% url 'main' %}">Прайслист</a>
+        <a href="{% url 'estimate' %}">Смета</a>
+    </div>
+
 </div>
 </header>
 {% block content %}{% endblock %}

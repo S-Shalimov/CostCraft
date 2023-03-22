@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django_select2.forms import ModelSelect2Widget
 from .models import Types, Units, BasePrice, Estimate
 
@@ -8,7 +9,7 @@ class AddPrice(forms.ModelForm):
                                    empty_label="Тип")
     units = forms.ModelChoiceField(queryset=Units.objects.all(), label=False,
                                    empty_label="Ед. изм.")
-    price_dol = forms.DecimalField(max_digits=10, decimal_places=2, required=True)
+    price_dol = forms.DecimalField(max_digits=10, decimal_places=2, required=False)
     price_sum = forms.DecimalField(max_digits=20, decimal_places=2, required=False)
 
     price_dol.widget.attrs.update({'placeholder': 'Цена $'})
@@ -18,6 +19,12 @@ class AddPrice(forms.ModelForm):
         model = BasePrice
         fields = ['name', 'units', 'price_dol', 'price_sum', 'types']
 
+    def clean(self):
+        cleaned_data = super().clean()
+        price_dol = cleaned_data.get('price_dol')
+        price_sum = cleaned_data.get('price_sum')
+        if not price_dol and not price_sum:
+            raise ValidationError('Заполните цену хотя бы в одной валюте')
 
 class AddEstimate(forms.ModelForm):
     name = forms.ModelChoiceField(queryset=BasePrice.objects.all(), label=False, empty_label="Наименование",
@@ -63,7 +70,9 @@ class AddEstimate(forms.ModelForm):
 
 
 class CollectEstimateUpload(forms.Form):
-    dxf_scheme = forms.FileField()
+    dxf_scheme = forms.FileField(label='Загрузите dxf-чертёж',
+                                 widget=forms.ClearableFileInput(attrs={'accept': '.dxf'})
+                                 )
 
 
 class ExchangeRateForm(forms.Form):

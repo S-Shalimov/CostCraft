@@ -7,11 +7,13 @@
     <p>Курс доллара: {{ rate }}</p>
     <p>Обновлён: {{ ratedate }}</p>
     <a href="{% url 'convert_dol' %}" class="button">Конвертировать в доллары</a>
+    <a href="{% url 'convert_dol' %}" class="button">Конвертировать в сумы</a>
 </div>
 <div>
     <form method="post" class="form-addprice">
         <div class="form-addprice__content">
             <div class="form-addprice__text">
+                {{ form_price.non_field_errors }}
                 <input type="text" class="form-control" placeholder="Добавить новый материал" name="name">
             </div>
             <div class="form-addprice__other-content">
@@ -46,7 +48,7 @@
             <td>{{ record.types.types }}</td>
             <td class="maintable__cell_not-bordered">
                 <a href="{% url 'pricelist_rec_del' record.id %}">
-                    <img src="{% static 'DxfEstimate/red_cross.png' %}" alt="del" width="20" height="20">
+                    <img src="{% static 'DxfEstimate/close_cross.png' %}" alt="del" width="20" height="20">
             </td>
         </tr>
         {% endfor %}
