@@ -9,9 +9,9 @@ def main(request):
             form_price.save()
             return redirect('main')
         else:
-            print(form_price.errors)
-            print(request.POST)
-            return redirect('main')
+            context = MainServices.get_context_data()
+            context['form_price'] = AddPrice(request.POST)
+            return render(request, 'main.html', context)
 
     return render(request, 'main.html', MainServices.get_context_data())
 
@@ -27,6 +27,11 @@ def deletion_request_pricelist_rec(request, id):
 
 def dol_convers_request(request):
     CurrencyServices.convertto_dol()
+    return redirect('main')
+
+
+def sum_convers_request(request):
+    CurrencyServices.convertto_sum()
     return redirect('main')
 
 
