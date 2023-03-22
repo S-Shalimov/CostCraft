@@ -272,6 +272,14 @@ class CurrencyServices():
             prod.save()
 
     @staticmethod
+    def convertto_sum():
+        conversion_prods = BasePrice.objects.filter(price_sum__isnull=True)
+        rate = ExchangeRate.objects.values_list('rate').last()
+        for prod in conversion_prods:
+            prod.price_sum = prod.price_dol * (rate[0] / Decimal(1.01))
+            prod.save()
+
+    @staticmethod
     def get_rate():
         url = 'https://api.apilayer.com/exchangerates_data/convert'
         params = {'to': 'UZS', 'from': 'USD', 'amount': 1}
