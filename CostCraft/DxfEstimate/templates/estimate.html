@@ -17,8 +17,8 @@
         {% csrf_token %}
         {{ form_estimate.as_p }}
         <input type="hidden" name="addestimate" value="True">
-        <p><button type="submit" class="button--inline">Добавить</button></p>
-        <p><a href="{% url 'estimate_xls' %}" class="button--inline">Скачать смету</a></p>
+        <p><button type="submit" class="button">Добавить</button></p>
+        <p><a href="{% url 'estimate_xls' %}" class="button">Скачать смету</a></p>
     </form>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -48,6 +48,11 @@
                 <td>{{ record.price_dol }} $</td>
                 <td>{{ record.total_price }} $</td>
                 <td class="maintable__cell_not-bordered">
+                    <a href="{% url 'estimate_rec_edit' record.id %}">
+                        <img src="{% static 'DxfEstimate/edit.png' %}" alt="del" width="20" height="20">
+                    </a>
+                </td>
+                <td class="maintable__cell_not-bordered">
                     <a href="{% url 'estimate_rec_del' record.id %}">
                         <img src="{% static 'DxfEstimate/close_cross.png' %}" alt="del" width="20" height="20">
                     </a>
@@ -71,7 +76,7 @@
     {% csrf_token %}
     {{ dxfupload }}
     <input type="hidden" name="adddxf" value="True">
-    <button type="submit" class="button--inline">Создать смету</button>
+    <button type="submit" class="button">Создать смету</button>
 </form>
 </body>
 {% endblock %}

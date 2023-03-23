@@ -62,6 +62,28 @@ def deletion_request_estimate_rec(request, id):
     return redirect('estimate')
 
 
+def edit_pricelist_rec(request, id):
+    pricelist_rec = get_object_or_404(BasePrice, id=id)
+    form_price = AddPrice(request.POST or None, instance=pricelist_rec)
+
+    if form_price.is_valid():
+        form_price.save()
+        return redirect('main')
+
+    return render(request, 'pricelist_edit.html', {'form_price': form_price})
+
+
+def edit_estimate_rec(request, id):
+    estimate_rec = get_object_or_404(Estimate, id=id)
+    form_estimate = AddEstimate(request.POST or None, instance=estimate_rec)
+
+    if form_estimate.is_valid():
+        form_estimate.save()
+        return redirect('estimate')
+
+    return render(request, 'estimate_edit.html', {'form_estimate': form_estimate})
+
+
 def deletion_request_estimate(request):
     EstimateServices.del_estimate()
     return redirect('estimate')

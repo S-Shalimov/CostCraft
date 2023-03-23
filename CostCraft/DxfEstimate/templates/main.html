@@ -22,7 +22,7 @@
                 <div class="form-addprice__other-elem">{{ form_price.price_sum }}</div>
                 <div class="form-addprice__other-elem">{{ form_price.price_dol }}</div>
                 <div class="form-addprice__other-elem">{{ form_price.types }}</div>
-                <button type="submit" class="button--inline">Записать</button>
+                <button type="submit" class="button">Записать</button>
             </div>
 
         </div>
@@ -46,6 +46,10 @@
             <td>{{ record.price_dol }}</td>
             <td>{{ record.units.units }}</td>
             <td>{{ record.types.types }}</td>
+            <td class="maintable__cell_not-bordered">
+                <a href="{% url 'pricelist_rec_edit' record.id %}">
+                    <img src="{% static 'DxfEstimate/edit.png' %}" alt="del" width="20" height="20">
+            </td>
             <td class="maintable__cell_not-bordered">
                 <a href="{% url 'pricelist_rec_del' record.id %}">
                     <img src="{% static 'DxfEstimate/close_cross.png' %}" alt="del" width="20" height="20">

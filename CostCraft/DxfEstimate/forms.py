@@ -54,7 +54,7 @@ class AddEstimate(forms.ModelForm):
 
         quantity = cleaned_data.get('quantity')
         if quantity and quantity < 0:
-            self.add_error('quantity', 'Количество не может быть отрицательным')
+            raise ValidationError('Количество не может быть отрицательным')
 
         base_price = cleaned_data.get('name')
 

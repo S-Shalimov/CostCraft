@@ -100,19 +100,6 @@ body {
 
 .button {
   display: inline-block;
-  padding: 10px 20px;
-  background-color: #3AAFA9;
-  color: white;
-  text-align: center;
-  font-size: 16px;
-  border: 1px solid black;
-  border-radius: 5px;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.button--inline {
-  display: inline-block;
   padding: 3px 20px;
   background-color: #3AAFA9;
   color: white;
@@ -134,6 +121,7 @@ body {
   align-items: center;
   margin-bottom: 10px;
 }
+
 .form-estimate p {
   display: inline-block;
 }

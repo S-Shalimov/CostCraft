@@ -1,0 +1,26 @@
+{% extends 'header.html' %}
+{% load static %}
+{% block title %}Редактирование{% endblock %}
+{% block content %}
+<body>
+<div>
+    <form method="post" class="form-addprice">
+        <div class="form-addprice__content">
+            <div class="form-addprice__text">
+                {{ form_price.non_field_errors }}
+                <input type="text" class="form-control" value="{{ form_price.name.value }}" placeholder="Наименование" name="name">
+            </div>
+            <div class="form-addprice__other-content">
+                {% csrf_token %}
+                <div class="form-addprice__other-elem">{{ form_price.units }}</div>
+                <div class="form-addprice__other-elem">{{ form_price.price_sum }}</div>
+                <div class="form-addprice__other-elem">{{ form_price.price_dol }}</div>
+                <div class="form-addprice__other-elem">{{ form_price.types }}</div>
+                <button type="submit" class="button">Записать</button>
+            </div>
+
+        </div>
+
+    </form>
+</body>
+{% endblock %}

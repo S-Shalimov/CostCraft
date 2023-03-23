@@ -1,0 +1,26 @@
+{% extends 'header.html' %}
+
+{% load static %}
+
+{% block head %}
+{{ form_estimate.media.css }}
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+{% endblock %}
+
+{% block title %}Смета{% endblock %}
+
+{% block content %}
+
+<body>
+<div class="form-estimate">
+    <form method="POST">
+        {% csrf_token %}
+        {{ form_estimate.name }}
+        {{ form_estimate.quantity }}
+        <p><button type="submit" class="button">Записать</button></p>
+    </form>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{{ form_estimate.media.js }}
+
+{% endblock %}
