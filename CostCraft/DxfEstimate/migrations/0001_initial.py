@@ -56,7 +56,6 @@ def load_seed_data_pricebase(apps, schema_editor):
                              price_dol=Decimal(45.0),
                              types=foreign_values['types']['работы'])
 
-
 class Migration(migrations.Migration):
 
     initial = True
