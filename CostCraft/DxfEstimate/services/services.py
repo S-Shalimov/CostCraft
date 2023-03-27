@@ -46,14 +46,13 @@ class EstimateServices():
     @staticmethod
     def get_context_data():
         dxfupload = CollectEstimateUpload()
-        estimate_objects = Estimate.objects.all()
+        estimate_objects = Estimate.objects.all().select_related()
         form_estimate = AddEstimate()
         sum_price = estimate_objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
         context = {
             'estimate': estimate_objects,
             'form_estimate': form_estimate,
             'sum_price': sum_price,
-            # TODO: можно загружать только dxf
             'dxfupload': dxfupload,
         }
         return context
@@ -128,9 +127,7 @@ class DxfServices():
 
     @staticmethod
     def get_dxf():
-        product_data = BasePrice.objects.all().values('id', 'name', 'units')
-        #TODO: использовать select_related или prefetch
-        units = Units.objects.all()
+        product_data = BasePrice.objects.all().select_related('units').values('id', 'name', 'units', 'units__units')
         dxf_templ = ezdxf.new()
         msp = dxf_templ.modelspace()
         ref_coord_y = 0
@@ -145,7 +142,7 @@ class DxfServices():
                 layer_name = '0CC' + '_' + str(record['id']) + '_' + str(record['name'])
             layer_name = layer_name.replace(' ', '_')
             dxf_templ.layers.new(name=(layer_name))
-            if str(units.get(pk=record['units'])) == 'м²':
+            if record['units__units'] == 'м²':
                 point_0 = (0, ref_coord_y)
                 point_2 = (indent * 3, ref_coord_y + indent)
                 point_1 = (point_0[0], point_2[1])
@@ -160,14 +157,14 @@ class DxfServices():
                     dxfattribs={'layer': layer_name})
                 msp.add_text(text=record['name'], height=indent, dxfattribs={
                     'layer': layer_name}).set_placement((indent * 4, ref_coord_y))
-            if str(units.get(pk=record['units'])) == 'м':
+            if record['units__units'] == 'м':
                 point_0 = (0, ref_coord_y)
                 point_1 = (indent * 3, ref_coord_y)
                 msp.add_lwpolyline((tuple(point_0), tuple(point_1)), dxfattribs={'layer': layer_name})
                 msp.add_text(text=record['name'], height=indent, dxfattribs={
                     'layer': layer_name
                 }).set_placement((indent * 4, ref_coord_y))
-            if str(units.get(pk=record['units'])) == 'шт':
+            if record['units__units'] == 'шт':
                 point_0 = (0, ref_coord_y)
                 point_2 = (indent * 3, ref_coord_y + indent)
                 point_1 = (point_0[0], point_2[1])
@@ -184,7 +181,6 @@ class DxfServices():
                     'layer': layer_name}).set_placement((indent * 4, ref_coord_y))
 
             ref_coord_y += indent * 6
-        # TODO: make the file temporary
         dxf_path = 'DxfEstimate/dxf/pricelist.dxf'
         dxf_templ.saveas(dxf_path)
 
@@ -197,7 +193,6 @@ class DxfServices():
 
     @staticmethod
     def collect_estimate(dxf_req):
-        #TODO: Оптимизировать кол-во запросов в БД
         dxf_file = tempfile.NamedTemporaryFile(suffix='.dxf', delete=False)
         dxf_file.write(dxf_req.read())
         dxf_file.close()
@@ -232,33 +227,53 @@ class DxfServices():
 
         layer_ids = {obj['id'] for obj in entities_with_pricelist_ids}
 
-        pricelist = BasePrice.objects.filter(id__in=layer_ids)
+        pricelist = BasePrice.objects.select_related('units',
+                            'types').filter(id__in=layer_ids)
+
+        pricelist_dicts = pricelist.values('id', 'units__units', 'types__types', 'price_dol')
+
+        pricelist_instances_lst = [instance for instance in pricelist]
+        # add appropriate BasePrice object instances to the dictionaries
+        # to avoid additional DB queries in the loop
+        for dictionary in pricelist_dicts:
+            dictionary['name'] = pricelist_instances_lst.pop(0)
 
         entities_with_pricelist_ids.sort(key=lambda obj: obj['id'])
         entities_with_pricelist_ids.append(None)
 
         item_id = None
         item_quantity = 0.0
+
+        estimate_records_list = []
+
         for obj in entities_with_pricelist_ids:
             if obj == None:
-                record_in_estimate = Estimate(name=item_name, quantity=item_quantity, units=item_unit,
-                                              types=item_types, price_dol=item_price)
-                record_in_estimate.save()
+                record_in_estimate = Estimate(name=item_name,
+                                              quantity=item_quantity, units=item_unit,
+                                              types=item_types, price_dol=item_price,
+                                              total_price=(item_price * Decimal(item_quantity)))
+                estimate_records_list.append(record_in_estimate)
             elif obj['id'] != item_id:
                 if item_id != None:
                     record_in_estimate = Estimate(name=item_name, quantity=item_quantity, units=item_unit,
-                                                  types=item_types, price_dol=item_price)
-                    record_in_estimate.save()
+                                                  types=item_types, price_dol=item_price,
+                                                  total_price=(item_price * Decimal(item_quantity)))
+                    estimate_records_list.append(record_in_estimate)
                     item_quantity = 0.0
                 item_id = obj['id']
-                resource_data = pricelist.get(id=item_id)
-                item_name = resource_data
-                item_unit = resource_data.units
-                item_types = resource_data.types
-                item_price = resource_data.price_dol
+                for dictionary in pricelist_dicts:
+                    if dictionary['id'] == item_id:
+                        resource_data = dictionary
+                item_name = resource_data['name']
+                item_unit = resource_data['units__units']
+                item_types = resource_data['types__types']
+                item_price = resource_data['price_dol']
                 item_quantity += get_item_quantity(obj, str(item_unit))
             elif obj['id'] == item_id:
                 item_quantity += get_item_quantity(obj, str(item_unit))
+
+        Estimate.objects.bulk_create(estimate_records_list)
+
 
 
 class CurrencyServices():
