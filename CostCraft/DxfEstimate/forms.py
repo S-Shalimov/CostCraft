@@ -48,7 +48,7 @@ class AddEstimate(forms.ModelForm):
             base_price = kwargs['instance'].name
             self.fields['units'].queryset = Units.objects.filter(pk=base_price.units.pk)
             self.fields['types'].queryset = Types.objects.filter(pk=base_price.types.pk)
-#TODO: разобраться с тем, насколько нужно переопределение обоих методов
+
     def clean(self):
         cleaned_data = super().clean()
 
